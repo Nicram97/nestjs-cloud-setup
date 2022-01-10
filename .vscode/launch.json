@@ -1,0 +1,43 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Launch Local",
+        "type": "node",
+        "request": "launch",
+        "runtimeExecutable": "node",
+        "runtimeArgs": ["--nolazy", "-r", "ts-node/register/transpile-only"],
+  
+        "args": ["${workspaceFolder}/src/main.ts"],
+        
+        "cwd": "${workspaceRoot}",
+        "internalConsoleOptions": "openOnSessionStart",
+        "skipFiles": ["<node_internals>/**", "node_modules/**"],
+        "outputCapture": "std"
+      },
+      {
+        "type": "node",
+        "name": "E2E testing",
+        "request": "launch",
+        "args": ["--config", "./test/e2e/jest.config.ts", "--runInBand"],
+        "cwd": "${workspaceFolder}",
+        "console": "integratedTerminal",
+        "internalConsoleOptions": "neverOpen",
+        "disableOptimisticBPs": true,
+        "program": "${workspaceFolder}/node_modules/jest/bin/jest",
+        "outputCapture": "std"
+      },
+      {
+        "type": "node",
+        "name": "Contract testing",
+        "request": "launch",
+        "args": ["--config", "./test/contract/jest.config.ts", "--runInBand"],
+        "cwd": "${workspaceFolder}",
+        "console": "integratedTerminal",
+        "internalConsoleOptions": "neverOpen",
+        "disableOptimisticBPs": true,
+        "program": "${workspaceFolder}/node_modules/jest/bin/jest",
+        "outputCapture": "std"
+      }
+    ]
+  }
