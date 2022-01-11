@@ -21,8 +21,8 @@ server:
 #   DB_CLI: ./src/migrations
 
 # logstash:
-#   LOGSTASH_HOST: 192.168.49.2
-#   LOGSTASH_PORT: 31354
+#   LOGSTASH_HOST: localhost
+#   LOGSTASH_PORT: 5000
 #   LOGSTASH_PROTOCOL: tcp
 
 sqlite:
