@@ -1,0 +1,36 @@
+server:
+  PORT: 3000
+
+# influxClient:
+#   INFLUX_URL: http://localhost:8086
+#   INFLUX_DATABASE: defaultdb
+#   INFLUX_RETENTION_POLICY: autogen
+#   INFLUX_ORGANIZATION: default
+#   INFLUX_SEND_INTERVAL_MS: 10000
+#   INFLUX_ACCESS_TOKEN: QkVtUb_mYxvP29F0l6DTt8jnJrchns88O_a1AXJSi72zPOcRpVwIySXmBOcCBqdo1utcT2feC34EsTMPgs4SHw
+#   INFLUX_BUCKET_ID: 9082a1478e9e781c
+
+# database:
+#   DB_HOST: localhost
+#   DB_PORT: 5432
+#   DB_USERNAME: nodetest
+#   DB_PASSWORD: nodetest
+#   DB_DATABASE: nodetest
+#   DB_ENTITIES: [./src/entity/**/*.ts]
+#   DB_MIGRATIONS: [./src/migrations/**/*.ts]
+#   DB_CLI: ./src/migrations
+
+# logstash:
+#   LOGSTASH_HOST: 192.168.49.2
+#   LOGSTASH_PORT: 31354
+#   LOGSTASH_PROTOCOL: tcp
+
+sqlite:
+  DB_DATABASE: test.db.sqlite3
+  DB_ENTITIES: [./src/entity/**/*.ts]
+  DB_MIGRATIONS: [./src/migrations/**/*.ts]
+  DB_CLI: ./src/migrations
+
+subservice:
+  URL: http://localhost
+  PORT: 3001
