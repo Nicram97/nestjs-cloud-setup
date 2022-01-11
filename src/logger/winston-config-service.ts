@@ -3,7 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import {
   WinstonModuleOptionsFactory,
   utilities as nestWinstonUtilities,
-  WinstonModule,
 } from 'nest-winston';
 import { LoggerOptions } from 'winston';
 import { LogstashTransport } from 'winston-logstash-ts';
@@ -16,9 +15,10 @@ export class WinstonConfigService implements WinstonModuleOptionsFactory {
 
   createWinstonModuleOptions(): LoggerOptions | Promise<LoggerOptions> {
     if (this.configService.get<string>('logstash.LOGSTASH_HOST')) {
-      return {
+      const winstonConfig: LoggerOptions = {
         format: winston.format.combine(
           winston.format.timestamp(),
+          winston.format.json(),
           nestWinstonUtilities.format.nestLike(),
         ),
         transports: [
@@ -36,6 +36,7 @@ export class WinstonConfigService implements WinstonModuleOptionsFactory {
           }),
         ],
       };
+      return winstonConfig;
     }
     return {
       transports: [new winston.transports.Console()],
