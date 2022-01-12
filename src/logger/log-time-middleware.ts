@@ -4,14 +4,17 @@ import {
   LoggerService,
   NestMiddleware,
 } from '@nestjs/common';
+import { InjectMetric } from '@willsoto/nestjs-prometheus';
 import { NextFunction, Request, Response } from 'express';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { Summary } from 'prom-client';
 
 @Injectable()
 export class LogTimeMiddleware implements NestMiddleware {
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
+    @InjectMetric('response_times') private readonly sumary: Summary<string>,
   ) {}
 
   use(req: Request, res: Response, next: NextFunction): void {
@@ -36,6 +39,9 @@ export class LogTimeMiddleware implements NestMiddleware {
           req.originalUrl
         } [CLOSED] ${responseTime.toLocaleString()} ms`,
       );
+      this.sumary
+        .labels(req.method, req.originalUrl, res.statusCode.toString())
+        .observe(responseTime);
     });
 
     next();
