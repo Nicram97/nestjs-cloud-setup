@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { WinstonModule } from 'nest-winston';
 import { AppController } from './app.controller';
 import configuration from './config/configuration';
+import { LogTimeMiddleware } from './logger/log-time-middleware';
 import { WinstonConfigService } from './logger/winston-config-service';
 
 @Module({
@@ -19,4 +20,8 @@ import { WinstonConfigService } from './logger/winston-config-service';
   controllers: [AppController],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LogTimeMiddleware).forRoutes('*');
+  }
+}
