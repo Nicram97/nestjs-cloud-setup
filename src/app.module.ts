@@ -1,17 +1,17 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import {
-  makeSummaryProvider,
-  PrometheusModule,
-} from '@willsoto/nestjs-prometheus';
+import { ScheduleModule } from '@nestjs/schedule';
 import { WinstonModule } from 'nest-winston';
 import { AppController } from './app.controller';
 import configuration from './config/configuration';
+import { InfluxService } from './influxdb/influx-service';
 import { LogTimeMiddleware } from './logger/log-time-middleware';
 import { WinstonConfigService } from './logger/winston-config-service';
+import { PrometheusModule } from './prometheus/prometheus.module';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       load: [configuration],
       ignoreEnvFile: true,
@@ -20,17 +20,10 @@ import { WinstonConfigService } from './logger/winston-config-service';
     WinstonModule.forRootAsync({
       useClass: WinstonConfigService,
     }),
-    PrometheusModule.register(),
+    PrometheusModule,
   ],
   controllers: [AppController],
-  providers: [
-    makeSummaryProvider({
-      name: 'response_times',
-      help: 'Response time in milliseconds',
-      labelNames: ['method', 'url', 'status'],
-      aggregator: 'average',
-    }),
-  ],
+  providers: [InfluxService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
