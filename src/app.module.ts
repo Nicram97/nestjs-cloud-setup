@@ -16,7 +16,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DbService } from './db/db.service';
 import { UserModule } from './user/user.module';
 import { CarsModule } from './cars/cars.module';
-import { CacheService } from './cache/cache.service';
 
 @Module({
   imports: [
