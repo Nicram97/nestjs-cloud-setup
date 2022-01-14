@@ -21,9 +21,7 @@ export class InfluxService implements OnApplicationBootstrap {
     private configService: ConfigService,
     private prometheusService: PrometheusService,
     private schedulerRegistry: SchedulerRegistry,
-  ) {}
-
-  onApplicationBootstrap() {
+  ) {
     if (this.configService.get<string>('influxClient.INFLUX_URL')) {
       this.influxDb = new InfluxDB({
         url: this.configService.get<string>('influxClient.INFLUX_URL'),
@@ -31,8 +29,13 @@ export class InfluxService implements OnApplicationBootstrap {
           'influxClient.INFLUX_ACCESS_TOKEN',
         ),
       });
+    }
+  }
+
+  async onApplicationBootstrap(): Promise<void> {
+    if (this.configService.get<string>('influxClient.INFLUX_URL')) {
       const interval = setInterval(
-        this.sendPrometheusMetricsToInflux,
+        async () => this.sendPrometheusMetricsToInflux(),
         this.configService.get<number>('influxClient.INFLUX_SEND_INTERVAL_MS'),
       );
       this.schedulerRegistry.addInterval(
@@ -42,7 +45,7 @@ export class InfluxService implements OnApplicationBootstrap {
     }
   }
 
-  private async sendPrometheusMetricsToInflux(): Promise<void> {
+  public async sendPrometheusMetricsToInflux(): Promise<void> {
     const influxPoints: Point[] = this.parsePrometheusJsonToInflux(
       await this.prometheusService.getMetricsAsJson(),
     );
@@ -54,7 +57,7 @@ export class InfluxService implements OnApplicationBootstrap {
     await writeAPI.close();
   }
 
-  private parsePrometheusJsonToInflux(prometheusData: metric[]): Point[] {
+  public parsePrometheusJsonToInflux(prometheusData: metric[]): Point[] {
     const influxPoints: Point[] = [];
     prometheusData.forEach((metric) => {
       const point: Point = new Point(metric.name)

@@ -4,10 +4,9 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { WinstonModule } from 'nest-winston';
 import { AppController } from './app.controller';
 import configuration from './config/configuration';
-import { InfluxService } from './influxdb/influx-service';
 import { LogTimeMiddleware } from './logger/log-time-middleware';
 import { WinstonConfigService } from './logger/winston-config-service';
-import { PrometheusModule } from './prometheus/prometheus.module';
+import { InfluxdbModule } from './influxdb/influxdb.module';
 
 @Module({
   imports: [
@@ -20,10 +19,10 @@ import { PrometheusModule } from './prometheus/prometheus.module';
     WinstonModule.forRootAsync({
       useClass: WinstonConfigService,
     }),
-    PrometheusModule,
+    InfluxdbModule,
   ],
   controllers: [AppController],
-  providers: [InfluxService],
+  providers: [],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
