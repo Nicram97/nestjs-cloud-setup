@@ -10,26 +10,26 @@ server:
 #   INFLUX_ACCESS_TOKEN: GLfxENWXCTvQRknxpO9UTHu6KCxcrJBFb1e9eKWk6OOBqSpWjIlGuwmmVWq4wirMNa6CaWlwVEL4AJ6Nmr6qDw==
 #   INFLUX_BUCKET_ID: 8218b27d35b1d82d
 
-database:
-  DB_HOST: localhost
-  DB_PORT: 5432
-  DB_USERNAME: nodetest
-  DB_PASSWORD: nodetest
-  DB_DATABASE: nodetest
-  DB_ENTITIES: [./src/entity/**/*.ts]
-  DB_MIGRATIONS: [./src/migrations/**/*.ts]
-  DB_CLI: ./src/migrations
+# database:
+#   DB_HOST: localhost
+#   DB_PORT: 5432
+#   DB_USERNAME: nodetest
+#   DB_PASSWORD: nodetest
+#   DB_DATABASE: nodetest
+#   DB_ENTITIES: [./src/entity/**/*.ts]
+#   DB_MIGRATIONS: [./src/migrations/**/*.ts]
+#   DB_CLI: ./src/migrations
 
 # logstash:
 #   LOGSTASH_HOST: localhost
 #   LOGSTASH_PORT: 5000
 #   LOGSTASH_PROTOCOL: tcp
 
-# sqlite:
-#   DB_DATABASE: test.db.sqlite3
-#   DB_ENTITIES: [./src/entity/**/*.ts]
-#   DB_MIGRATIONS: [./src/migrations/**/*.ts]
-#   DB_CLI: ./src/migrations
+sqlite:
+  DB_DATABASE: test.db.sqlite3
+  DB_ENTITIES: [./src/entity/**/*.ts]
+  DB_MIGRATIONS: [./src/migrations/**/*.ts]
+  DB_CLI: ./src/migrations
 
 subservice:
   URL: http://localhost

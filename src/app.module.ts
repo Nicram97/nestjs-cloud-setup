@@ -10,6 +10,7 @@ import { InfluxdbModule } from './influxdb/influxdb.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DbService } from './db/db.service';
 import { UserModule } from './user/user.module';
+import { CarsModule } from './cars/cars.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { UserModule } from './user/user.module';
     }),
     InfluxdbModule,
     UserModule,
+    CarsModule,
   ],
   controllers: [AppController],
   providers: [],

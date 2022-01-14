@@ -11,7 +11,6 @@ import {
   SummaryConfiguration,
 } from 'prom-client';
 import { Connection } from 'typeorm';
-import { DbService } from '../db/db.service';
 
 export type PrometheusHistogram = Histogram<string>;
 
@@ -37,7 +36,6 @@ export class PrometheusService {
 
   constructor(
     private configService: ConfigService,
-    private dbService: DbService,
     @InjectConnection()
     private connection: Connection,
   ) {
