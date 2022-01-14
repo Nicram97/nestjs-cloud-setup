@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
 import { ConnectionOptions } from 'typeorm';
-
 @Injectable()
 export class DbService implements TypeOrmOptionsFactory {
   constructor(private configService: ConfigService) {}
+
   createTypeOrmOptions(): TypeOrmModuleOptions | Promise<TypeOrmModuleOptions> {
     let connectionOptions: ConnectionOptions;
     if (this.configService.get<string>('sqlite.DB_DATABASE')) {

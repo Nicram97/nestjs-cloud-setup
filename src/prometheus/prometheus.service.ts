@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { InjectConnection } from '@nestjs/typeorm';
 import {
   collectDefaultMetrics,
   Gauge,
@@ -8,6 +10,8 @@ import {
   Summary,
   SummaryConfiguration,
 } from 'prom-client';
+import { Connection } from 'typeorm';
+import { DbService } from '../db/db.service';
 
 export type PrometheusHistogram = Histogram<string>;
 
@@ -25,24 +29,51 @@ interface MapSummary {
 
 @Injectable()
 export class PrometheusService {
+  private postgresDbConnections: Summary<string>;
   private registeredMetrics: MapHistogram = {};
   private registeredGauges: MapGauge = {};
   private registeredSummaries: MapSummary = {};
   private readonly registry: Registry;
 
-  public getMetrics(): Promise<string> {
-    return this.registry.metrics();
-  }
-
-  public getMetricsAsJson(): Promise<metric[]> {
-    return this.registry.getMetricsAsJSON();
-  }
-
-  constructor() {
+  constructor(
+    private configService: ConfigService,
+    private dbService: DbService,
+    @InjectConnection()
+    private connection: Connection,
+  ) {
     this.registry = new Registry();
     collectDefaultMetrics({
       register: this.registry,
     });
+    if (this.configService.get<string>('database.DB_HOST')) {
+      this.postgresDbConnections = this.registerSummary({
+        name: 'opened_connections',
+        help: 'Number of opened connections in database',
+        labelNames: ['opened'],
+        aggregator: 'omit',
+      });
+      this.postgresDbConnections
+        .labels('opened')
+        .observe(this.getPostgresDbPoolSize());
+    }
+  }
+
+  public getMetrics(): Promise<string> {
+    if (this.configService.get<string>('database.DB_HOST')) {
+      this.postgresDbConnections
+        .labels('opened')
+        .observe(this.getPostgresDbPoolSize());
+    }
+    return this.registry.metrics();
+  }
+
+  public getMetricsAsJson(): Promise<metric[]> {
+    if (this.configService.get<string>('database.DB_HOST')) {
+      this.postgresDbConnections
+        .labels('opened')
+        .observe(this.getPostgresDbPoolSize());
+    }
+    return this.registry.getMetricsAsJSON();
   }
 
   public registerHistogram(
@@ -90,5 +121,9 @@ export class PrometheusService {
   public clearMetrics(): void {
     this.registry.resetMetrics();
     return this.registry.clear();
+  }
+
+  getPostgresDbPoolSize(): number {
+    return (this.connection.driver as any).postgres.Pool.length;
   }
 }

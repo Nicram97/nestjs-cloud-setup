@@ -7,7 +7,6 @@ import configuration from './config/configuration';
 import { LogTimeMiddleware } from './logger/log-time-middleware';
 import { WinstonConfigService } from './logger/winston-config-service';
 import { InfluxdbModule } from './influxdb/influxdb.module';
-import { DbModule } from './db/db.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DbService } from './db/db.service';
 import { UserModule } from './user/user.module';
@@ -27,7 +26,6 @@ import { UserModule } from './user/user.module';
       useClass: DbService,
     }),
     InfluxdbModule,
-    DbModule,
     UserModule,
   ],
   controllers: [AppController],
