@@ -17,7 +17,7 @@ export class DbService implements TypeOrmOptionsFactory {
         cli: {
           migrationsDir: this.configService.get<string>('sqlite.DB_CLI'),
         },
-        synchronize: false,
+        synchronize: true,
         logging: false,
         name: 'sqliteConnectionName',
       };

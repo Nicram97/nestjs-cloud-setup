@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import {
+  CacheModule,
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+} from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { WinstonModule } from 'nest-winston';
@@ -11,9 +16,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DbService } from './db/db.service';
 import { UserModule } from './user/user.module';
 import { CarsModule } from './cars/cars.module';
+import { CacheService } from './cache/cache.service';
 
 @Module({
   imports: [
+    CacheModule.register({
+      ttl: 3600,
+      isGlobal: true,
+    }),
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       load: [configuration],
