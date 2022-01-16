@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nestjs-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nestjs-cloud-setup
+  template:
+    metadata:
+      labels:
+        app: nestjs-cloud-setup
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '3010'
+        prometheus.io/path: '/prometheus/metrics'
+    spec:
+      containers:
+      - name: nestjs-cloud-setup
+        image: nestjs-cloud-setup
+        imagePullPolicy: Never
+        ports:
+            - containerPort: 3010
+      restartPolicy: Always

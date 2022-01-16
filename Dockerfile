@@ -1,12 +1,31 @@
-FROM node:14
+FROM node:14-alpine As development
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
-COPY ["package.json", "package-lock.json*", "./"]
+COPY package*.json ./
 
-RUN npm ci
+RUN npm install --only-development
+
 COPY . .
 
-EXPOSE 3000
+RUN npm run build
 
-CMD [ "npm", "run", "start"]
+FROM node:14-alpine As production
+
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+RUN npm install --only=production
+
+COPY . .
+RUN rm -rf ./src
+COPY --from=development /usr/src/app/dist ./dist
+
+EXPOSE 3010
+
+CMD ["npm", "run" , "typeorm:prod:migration:run"]
+CMD ["npm", "run", "start:prod"]
