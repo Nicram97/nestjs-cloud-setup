@@ -11,14 +11,14 @@ server:
 #   INFLUX_BUCKET_ID: 8218b27d35b1d82d
 
 database:
-  DB_HOST: postgres_container
+  DB_HOST: localhost
   DB_PORT: 5432
   DB_USERNAME: nodetest
   DB_PASSWORD: nodetest
   DB_DATABASE: nodetest
-  DB_ENTITIES: ['{src, dist/src}/entity/**/*{.ts,.js}']
-  DB_MIGRATIONS: ['{src, dist/src}/migrations/**/*{.ts,.js}']
-  DB_CLI: '{src, dist/src}/migrations'
+  DB_ENTITIES: ['./src/**/*.entity{.ts,.js}']
+  DB_MIGRATIONS: ['./src/migrations/**/*{.ts,.js}']
+  DB_CLI: './src/migrations'
 
 # logstash:
 #   LOGSTASH_HOST: localhost

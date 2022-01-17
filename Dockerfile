@@ -1,12 +1,10 @@
-FROM node:14-alpine As development
+FROM node:14-alpine As build
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
-
-RUN npm install --only-development
-
 COPY . .
+
+RUN npm ci
 
 RUN npm run build
 
@@ -19,13 +17,10 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm install --only=production
+RUN npm ci
 
-COPY . .
-RUN rm -rf ./src
-COPY --from=development /usr/src/app/dist ./dist
+COPY --from=build /usr/src/app/dist ./dist
 
 EXPOSE 3010
 
-CMD ["npm", "run" , "typeorm:prod:migration:run"]
 CMD ["npm", "run", "start:prod"]

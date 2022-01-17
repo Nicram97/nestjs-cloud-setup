@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { CacheService } from '../cache/cache.service';
 import { Repository } from 'typeorm';
-import { User } from '../entity/user';
+import { User } from '../entity/user.entity';
 import { UserDto } from './dto/user.dto';
 
 const userKey = 'getUsersKey';

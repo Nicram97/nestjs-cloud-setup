@@ -4,7 +4,7 @@ import {
   ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
-import { User } from '../entity/user';
+import { User } from '../entity/user.entity';
 import { UserDto } from './dto/user.dto';
 import { UserService } from './user.service';
 
