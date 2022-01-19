@@ -3,6 +3,7 @@ import {
   Injectable,
   LoggerService,
   NestMiddleware,
+  OnModuleInit,
 } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
@@ -10,14 +11,15 @@ import { Summary } from 'prom-client';
 import { PrometheusService } from '../prometheus/prometheus.service';
 
 @Injectable()
-export class LogTimeMiddleware implements NestMiddleware {
+export class LogTimeMiddleware implements NestMiddleware, OnModuleInit {
   private responseTimeSummary: Summary<string>;
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
     private readonly prometheusService: PrometheusService,
-  ) {
-    this.responseTimeSummary = this.prometheusService.registerSummary({
+  ) {}
+  async onModuleInit(): Promise<void> {
+    this.responseTimeSummary = await this.prometheusService.registerSummary({
       name: 'response_times',
       help: 'Response time in milliseconds',
       labelNames: ['method', 'url', 'status'],

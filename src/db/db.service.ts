@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
-import { ConnectionOptions } from 'typeorm';
 @Injectable()
 export class DbService implements TypeOrmOptionsFactory {
   constructor(private configService: ConfigService) {}
 
   createTypeOrmOptions(): TypeOrmModuleOptions | Promise<TypeOrmModuleOptions> {
-    let connectionOptions: ConnectionOptions;
+    let connectionOptions: TypeOrmModuleOptions;
     if (this.configService.get<string>('sqlite.DB_DATABASE')) {
       connectionOptions = {
         type: 'sqlite',
         database: this.configService.get<string>('sqlite.DB_DATABASE'),
         entities: this.configService.get<string[]>('sqlite.DB_ENTITIES'),
         migrations: this.configService.get<string[]>('sqlite.DB_MIGRATIONS'),
+        keepConnectionAlive: true,
         cli: {
           migrationsDir: this.configService.get<string>('sqlite.DB_CLI'),
         },
@@ -32,6 +32,7 @@ export class DbService implements TypeOrmOptionsFactory {
         database: this.configService.get<string>('database.DB_DATABASE'),
         entities: this.configService.get<string[]>('database.DB_ENTITIES'),
         migrations: this.configService.get<string[]>('database.DB_MIGRATIONS'),
+        keepConnectionAlive: true,
         cli: {
           migrationsDir: this.configService.get<string>('database.DB_CLI'),
         },

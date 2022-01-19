@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectConnection } from '@nestjs/typeorm';
 import {
   collectDefaultMetrics,
   Gauge,
   Histogram,
+  Metric,
   metric,
   Registry,
   Summary,
@@ -12,26 +13,9 @@ import {
 } from 'prom-client';
 import { Connection } from 'typeorm';
 
-export type PrometheusHistogram = Histogram<string>;
-
-interface MapHistogram {
-  [key: string]: Histogram<string>;
-}
-
-interface MapGauge {
-  [key: string]: Gauge<string>;
-}
-
-interface MapSummary {
-  [key: string]: Summary<string>;
-}
-
 @Injectable()
-export class PrometheusService {
+export class PrometheusService implements OnModuleInit {
   private postgresDbConnections: Summary<string>;
-  private registeredMetrics: MapHistogram = {};
-  private registeredGauges: MapGauge = {};
-  private registeredSummaries: MapSummary = {};
   private readonly registry: Registry;
 
   constructor(
@@ -43,8 +27,10 @@ export class PrometheusService {
     collectDefaultMetrics({
       register: this.registry,
     });
+  }
+  async onModuleInit(): Promise<void> {
     if (this.configService.get<string>('database.DB_HOST')) {
-      this.postgresDbConnections = this.registerSummary({
+      this.postgresDbConnections = await this.registerSummary({
         name: 'opened_connections',
         help: 'Number of opened connections in database',
         labelNames: ['opened'],
@@ -80,36 +66,40 @@ export class PrometheusService {
     labelNames: string[],
     buckets: number[],
   ): Histogram<string> {
-    if (this.registeredMetrics[name] === undefined) {
+    const metric: Metric<string> = this.registry.getSingleMetric(name);
+    if (metric === undefined) {
       const histogram = new Histogram({ name, help, labelNames, buckets });
       this.registry.registerMetric(histogram);
-      this.registeredMetrics[name] = histogram;
+      return histogram;
     }
-    return this.registeredMetrics[name];
+    return metric as Histogram<string>;
   }
 
   public registerGauge(name: string, help: string): Gauge<string> {
-    if (this.registeredGauges[name] === undefined) {
-      const gauge = (this.registeredGauges[name] = new Gauge({
+    const metric: Metric<string> = this.registry.getSingleMetric(name);
+    if (metric === undefined) {
+      const gauge = new Gauge({
         name: name,
         help,
-      }));
+      });
       this.registry.registerMetric(gauge);
-      this.registeredGauges[name] = gauge;
+      return gauge;
     }
-    return this.registeredGauges[name];
+    return metric as Gauge<string>;
   }
 
-  public registerSummary(
+  public async registerSummary(
     summaryConfiguration: SummaryConfiguration<string>,
-  ): Summary<string> {
-    if (this.registerSummary[summaryConfiguration.name] === undefined) {
-      const summary = (this.registerSummary[summaryConfiguration.name] =
-        new Summary(summaryConfiguration));
+  ): Promise<Summary<string>> {
+    const metric: Metric<string> = this.registry.getSingleMetric(
+      summaryConfiguration.name,
+    );
+    if (metric === undefined) {
+      const summary = new Summary(summaryConfiguration);
       this.registry.registerMetric(summary);
-      this.registeredSummaries[summaryConfiguration.name] = summary;
+      return summary;
     }
-    return this.registeredSummaries[summaryConfiguration.name];
+    return metric as Summary<string>;
   }
 
   public removeSingleMetric(name: string): void {
