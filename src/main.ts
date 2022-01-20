@@ -5,11 +5,13 @@ import { winstonLoggerMiddleware } from './logger/log-req-res-body-middleware';
 import * as actuator from 'express-actuator';
 import { actuatorOptions } from './actuator/actuator';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { HttpExceptionFilter } from './exceptions/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(winstonLoggerMiddleware(app.get(WINSTON_MODULE_NEST_PROVIDER)));
   app.use(actuator(actuatorOptions));
+  app.useGlobalFilters(new HttpExceptionFilter());
   const config = new DocumentBuilder()
     .setTitle('Nestjs-cloud-setup')
     .setDescription('Cloud-setup API description')
