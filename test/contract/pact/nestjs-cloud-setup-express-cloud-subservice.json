@@ -1,0 +1,52 @@
+{
+  "consumer": {
+    "name": "nestjs-cloud-setup"
+  },
+  "provider": {
+    "name": "express-cloud-subservice"
+  },
+  "interactions": [
+    {
+      "description": "a request for list of cars",
+      "providerState": "provider contain list of cars",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+        },
+        "body": [
+          {
+            "Name": "chevrolet chevelle malibu",
+            "Year": "1970-01-01",
+            "Origin": "USA"
+          }
+        ],
+        "matchingRules": {
+          "$.body": {
+            "min": 1
+          },
+          "$.body[*].*": {
+            "match": "type"
+          },
+          "$.body[*].Name": {
+            "match": "type"
+          },
+          "$.body[*].Year": {
+            "match": "type"
+          },
+          "$.body[*].Origin": {
+            "match": "type"
+          }
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pactSpecification": {
+      "version": "2.0.0"
+    }
+  }
+}
